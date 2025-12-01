@@ -43,6 +43,9 @@ def get_main_keyboard():
         [
             InlineKeyboardButton("ℹ️ Help", callback_data="help"),
             InlineKeyboardButton("⚙️ Settings", callback_data="settings")
+        ],
+        [
+            InlineKeyboardButton("🤖 Change AI Model", callback_data="models")
         ]
     ]
     return InlineKeyboardMarkup(keyboard)
@@ -77,6 +80,26 @@ def get_language_keyboard():
 
 def get_back_keyboard():
     return InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Back to Menu", callback_data="menu")]])
+
+def get_model_keyboard():
+    keyboard = [
+        [
+            InlineKeyboardButton("🦙 LLaMA 3.3 70B", callback_data="model_llama-3.3-70b-versatile")
+        ],
+        [
+            InlineKeyboardButton("⚡ LLaMA 3.1 8B (Fast)", callback_data="model_llama-3.1-8b-instant")
+        ],
+        [
+            InlineKeyboardButton("🔮 Mixtral 8x7B", callback_data="model_mixtral-8x7b-32768")
+        ],
+        [
+            InlineKeyboardButton("💎 Gemma 2 9B", callback_data="model_gemma2-9b-it")
+        ],
+        [
+            InlineKeyboardButton("🔙 Back to Menu", callback_data="menu")
+        ]
+    ]
+    return InlineKeyboardMarkup(keyboard)
 
 async def api_request(endpoint: str, data: dict) -> dict:
     try:
@@ -202,12 +225,34 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         settings_text = """*⚙️ Settings*
 
 Current configuration:
-• Model: GPT-4o (Latest)
+• Model: LLaMA 3.3 70B (Free)
 • Max Response: 4096 tokens
 • Memory: Last 20 messages
 
-_Settings will expand in future updates!_"""
+_Tap "Change AI Model" to switch models!_"""
         await query.edit_message_text(settings_text, parse_mode=ParseMode.MARKDOWN, reply_markup=get_back_keyboard())
+    
+    elif data == "models":
+        models_text = """*🤖 Select AI Model*
+
+Choose from these FREE open-source models:
+
+🦙 *LLaMA 3.3 70B* - Best quality, most capable
+⚡ *LLaMA 3.1 8B* - Fast responses
+🔮 *Mixtral 8x7B* - Great balance
+💎 *Gemma 2 9B* - Efficient & smart"""
+        await query.edit_message_text(models_text, parse_mode=ParseMode.MARKDOWN, reply_markup=get_model_keyboard())
+    
+    elif data.startswith("model_"):
+        model_id = data.replace("model_", "")
+        model_names = {
+            "llama-3.3-70b-versatile": "LLaMA 3.3 70B 🦙",
+            "llama-3.1-8b-instant": "LLaMA 3.1 8B ⚡",
+            "mixtral-8x7b-32768": "Mixtral 8x7B 🔮",
+            "gemma2-9b-it": "Gemma 2 9B 💎"
+        }
+        await api_request("set-model", {"model_id": model_id})
+        await query.edit_message_text(f"✅ *Model Changed!*\n\nNow using: *{model_names.get(model_id, model_id)}*\n\nThis model is completely FREE!", parse_mode=ParseMode.MARKDOWN, reply_markup=get_main_keyboard())
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = str(update.effective_user.id)
@@ -221,16 +266,16 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     try:
         if mode == 'code' and language:
-            result = await api_request("generate", {"description": message, "language": language})
+            result = await api_request("generate", {"description": message, "language": language, "user_id": user_id})
             response = result.get("code", result.get("error", "Error generating code"))
         elif mode == 'analyze':
-            result = await api_request("analyze", {"code": message})
+            result = await api_request("analyze", {"code": message, "user_id": user_id})
             response = result.get("analysis", result.get("error", "Error analyzing code"))
         elif mode == 'website':
-            result = await api_request("website", {"description": message})
+            result = await api_request("website", {"description": message, "user_id": user_id})
             response = result.get("website", result.get("error", "Error creating website"))
         elif mode == 'research':
-            result = await api_request("research", {"topic": message})
+            result = await api_request("research", {"topic": message, "user_id": user_id})
             response = result.get("research", result.get("error", "Error researching topic"))
         else:
             result = await api_request("chat", {"text": message, "user_id": user_id})

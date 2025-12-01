@@ -28,16 +28,20 @@ class ChatRequest(BaseModel):
 class CodeRequest(BaseModel):
     code: str
     language: Optional[str] = "auto"
+    user_id: Optional[str] = "default"
 
 class GenerateRequest(BaseModel):
     description: str
     language: str
+    user_id: Optional[str] = "default"
 
 class ResearchRequest(BaseModel):
     topic: str
+    user_id: Optional[str] = "default"
 
 class WebsiteRequest(BaseModel):
     description: str
+    user_id: Optional[str] = "default"
 
 class ClearHistoryRequest(BaseModel):
     user_id: str
@@ -56,22 +60,22 @@ async def chat(req: ChatRequest):
 
 @app.post("/api/analyze")
 async def analyze_code(req: CodeRequest):
-    response = await ai_client.analyze_code(req.code, req.language)
+    response = await ai_client.analyze_code(req.code, req.language, req.user_id)
     return {"analysis": response}
 
 @app.post("/api/generate")
 async def generate_code(req: GenerateRequest):
-    response = await ai_client.generate_code(req.description, req.language)
+    response = await ai_client.generate_code(req.description, req.language, req.user_id)
     return {"code": response}
 
 @app.post("/api/research")
 async def research(req: ResearchRequest):
-    response = await ai_client.research(req.topic)
+    response = await ai_client.research(req.topic, req.user_id)
     return {"research": response}
 
 @app.post("/api/website")
 async def create_website(req: WebsiteRequest):
-    response = await ai_client.create_website(req.description)
+    response = await ai_client.create_website(req.description, req.user_id)
     return {"website": response}
 
 @app.post("/api/clear-history")

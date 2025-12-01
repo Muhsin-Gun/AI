@@ -91,7 +91,7 @@ class AIClient:
         except Exception as e:
             return f"Error: {str(e)}"
     
-    async def analyze_code(self, code: str, language: str = "auto") -> str:
+    async def analyze_code(self, code: str, language: str = "auto", user_id: str = "default") -> str:
         prompt = f"""Analyze this code and provide:
 1. A summary of what it does
 2. Any bugs or issues found
@@ -104,9 +104,9 @@ Language: {language}
 ```
 {code}
 ```"""
-        return await self.chat(prompt)
+        return await self.chat(prompt, user_id=user_id)
     
-    async def generate_code(self, description: str, language: str) -> str:
+    async def generate_code(self, description: str, language: str, user_id: str = "default") -> str:
         prompt = f"""Generate complete, working {language} code for the following:
 
 {description}
@@ -116,9 +116,9 @@ Requirements:
 - Include comments explaining key parts
 - Follow best practices for {language}
 - Handle errors appropriately"""
-        return await self.chat(prompt)
+        return await self.chat(prompt, user_id=user_id)
     
-    async def research(self, topic: str) -> str:
+    async def research(self, topic: str, user_id: str = "default") -> str:
         prompt = f"""Perform deep research on: {topic}
 
 Provide:
@@ -128,9 +128,9 @@ Provide:
 4. Common pitfalls to avoid
 5. Useful resources and next steps
 6. Code examples if applicable"""
-        return await self.chat(prompt)
+        return await self.chat(prompt, user_id=user_id)
     
-    async def create_website(self, description: str) -> str:
+    async def create_website(self, description: str, user_id: str = "default") -> str:
         prompt = f"""Create a complete website based on this description:
 
 {description}
@@ -141,6 +141,6 @@ Provide:
 3. Interactive elements
 4. Clean, professional styling
 5. The code should be ready to run directly"""
-        return await self.chat(prompt)
+        return await self.chat(prompt, user_id=user_id)
 
 ai_client = AIClient()

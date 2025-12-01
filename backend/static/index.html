@@ -549,6 +549,61 @@
             border-color: var(--primary);
         }
 
+        .model-selector {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .model-selector h3 {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .model-selector select {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+        }
+
+        .model-selector select:hover,
+        .model-selector select:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .model-selector select option {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            padding: 10px;
+        }
+
+        .model-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--success);
+        }
+
+        .model-info i {
+            font-size: 14px;
+        }
+
         @media (max-width: 900px) {
             .main-content {
                 grid-template-columns: 1fr;
@@ -638,6 +693,20 @@
                         <button class="lang-btn" data-lang="dart">Flutter</button>
                         <button class="lang-btn" data-lang="rust">Rust</button>
                         <button class="lang-btn" data-lang="go">Go</button>
+                    </div>
+                </div>
+
+                <div class="model-selector">
+                    <h3>AI Model</h3>
+                    <select id="modelSelect" onchange="changeModel(this.value)">
+                        <option value="llama-3.3-70b-versatile">LLaMA 3.3 70B (Best)</option>
+                        <option value="llama-3.1-8b-instant">LLaMA 3.1 8B (Fast)</option>
+                        <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
+                        <option value="gemma2-9b-it">Gemma 2 9B</option>
+                    </select>
+                    <div class="model-info">
+                        <i class="fas fa-bolt"></i>
+                        <span id="modelStatus">Free & Unlimited</span>
                     </div>
                 </div>
             </aside>
@@ -832,16 +901,16 @@
 
                 if (currentMode === 'code') {
                     endpoint = 'generate';
-                    body = { description: text, language: selectedLang };
+                    body = { description: text, language: selectedLang, user_id: userId };
                 } else if (currentMode === 'analyze') {
                     endpoint = 'analyze';
-                    body = { code: text };
+                    body = { code: text, user_id: userId };
                 } else if (currentMode === 'website') {
                     endpoint = 'website';
-                    body = { description: text };
+                    body = { description: text, user_id: userId };
                 } else if (currentMode === 'research') {
                     endpoint = 'research';
-                    body = { topic: text };
+                    body = { topic: text, user_id: userId };
                 }
 
                 const response = await fetch(`/api/${endpoint}`, {
@@ -887,11 +956,44 @@
             }
         }
 
+        async function changeModel(modelId) {
+            try {
+                const response = await fetch('/api/set-model', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ model_id: modelId })
+                });
+                const data = await response.json();
+                if (data.status === 'success') {
+                    document.getElementById('modelStatus').textContent = 'Model changed successfully!';
+                    setTimeout(() => {
+                        document.getElementById('modelStatus').textContent = 'Free & Unlimited';
+                    }, 2000);
+                }
+            } catch (error) {
+                console.error('Failed to change model:', error);
+            }
+        }
+
         const textarea = document.getElementById('userInput');
         textarea.addEventListener('input', function() {
             this.style.height = 'auto';
             this.style.height = Math.min(this.scrollHeight, 200) + 'px';
         });
+
+        async function loadCurrentModel() {
+            try {
+                const response = await fetch('/api/models');
+                const data = await response.json();
+                if (data.current) {
+                    document.getElementById('modelSelect').value = data.current;
+                }
+            } catch (error) {
+                console.error('Failed to load model:', error);
+            }
+        }
+
+        loadCurrentModel();
     </script>
 </body>
 </html>
