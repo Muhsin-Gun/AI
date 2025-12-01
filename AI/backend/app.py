@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from model_client import ModelClient
 from utils import apply_patch_to_file, run_shell_command
 import os
+import uvicorn
 
 app = FastAPI(title="MyLocalAI Enhanced")
 
@@ -50,3 +51,9 @@ def apply_patch(req: PatchRequest):
 def run_command(req: CommandRequest):
     out = run_shell_command(req.command)
     return {"output": out}
+
+
+if __name__ == "__main__":
+    # When running directly (e.g., on Replit), bind to all interfaces
+    # and use port 3000 so the Replit web server can expose the app.
+    uvicorn.run("app:app", host="0.0.0.0", port=3000, reload=True)
