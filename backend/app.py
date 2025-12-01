@@ -42,6 +42,9 @@ class WebsiteRequest(BaseModel):
 class ClearHistoryRequest(BaseModel):
     user_id: str
 
+class ModelRequest(BaseModel):
+    model_id: str
+
 @app.get("/api/health")
 async def health():
     return {"status": "healthy", "service": "TradePackage AI"}
@@ -75,6 +78,19 @@ async def create_website(req: WebsiteRequest):
 async def clear_history(req: ClearHistoryRequest):
     ai_client.clear_history(req.user_id)
     return {"status": "cleared"}
+
+@app.get("/api/models")
+async def get_models():
+    return {
+        "models": ai_client.get_available_models(),
+        "current": ai_client.current_model
+    }
+
+@app.post("/api/set-model")
+async def set_model(req: ModelRequest):
+    if ai_client.set_model(req.model_id):
+        return {"status": "success", "model": req.model_id}
+    return {"status": "error", "message": "Invalid model"}
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 

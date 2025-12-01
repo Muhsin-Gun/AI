@@ -1,14 +1,14 @@
 import os
 import json
-from openai import OpenAI
+from groq import Groq
 
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 
 client = None
-if OPENAI_API_KEY:
-    client = OpenAI(api_key=OPENAI_API_KEY)
+if GROQ_API_KEY:
+    client = Groq(api_key=GROQ_API_KEY)
 
-SYSTEM_PROMPT = """You are TradePackage AI - a powerful, intelligent coding assistant and research expert.
+SYSTEM_PROMPT = """You are TradePackage AI - a powerful, intelligent coding assistant and research expert powered by LLaMA and Mistral open-source models.
 
 Your capabilities:
 - Generate code in ANY programming language (Python, JavaScript, TypeScript, Flutter/Dart, Laravel/PHP, React, Vue, Angular, Go, Rust, C++, Java, and more)
@@ -24,6 +24,22 @@ You are smart, helpful, and always provide high-quality, working code. Format yo
 class AIClient:
     def __init__(self):
         self.conversation_history = {}
+        self.current_model = "llama-3.3-70b-versatile"
+    
+    def get_available_models(self):
+        return {
+            "llama-3.3-70b-versatile": "LLaMA 3.3 70B (Best Quality)",
+            "llama-3.1-8b-instant": "LLaMA 3.1 8B (Fast)",
+            "mixtral-8x7b-32768": "Mixtral 8x7B (Balanced)",
+            "gemma2-9b-it": "Gemma 2 9B (Efficient)"
+        }
+    
+    def set_model(self, model_id: str):
+        available = self.get_available_models()
+        if model_id in available:
+            self.current_model = model_id
+            return True
+        return False
     
     def get_history(self, user_id: str) -> list:
         if user_id not in self.conversation_history:
@@ -43,10 +59,11 @@ class AIClient:
     async def chat(self, prompt: str, user_id: str = "default", context: str = None, max_tokens: int = 4096) -> str:
         global client
         if not client:
-            if OPENAI_API_KEY:
-                client = OpenAI(api_key=OPENAI_API_KEY)
+            api_key = os.environ.get("GROQ_API_KEY")
+            if api_key:
+                client = Groq(api_key=api_key)
             else:
-                return "Error: OpenAI API key is not configured. Please add your OPENAI_API_KEY in the Secrets tab."
+                return "Error: Groq API key is not configured. Please add your GROQ_API_KEY in the Secrets tab. Get a free key at https://console.groq.com"
         
         try:
             messages = [{"role": "system", "content": SYSTEM_PROMPT}]
@@ -62,7 +79,7 @@ class AIClient:
             self.add_to_history(user_id, "user", prompt)
             
             response = client.chat.completions.create(
-                model="gpt-4o",
+                model=self.current_model,
                 messages=messages,
                 max_tokens=max_tokens
             )
