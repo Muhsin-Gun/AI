@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TradePackage AI - Intelligent Coding Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --bg-dark: #0f0f23;
+            --bg-card: #1a1a2e;
+            --bg-input: #16213e;
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+            --glow: rgba(99, 102, 241, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .animated-bg::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+            animation: bgFloat 20s ease-in-out infinite;
+        }
+
+        @keyframes bgFloat {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(2%, 2%) rotate(1deg); }
+            50% { transform: translate(0, 4%) rotate(0deg); }
+            75% { transform: translate(-2%, 2%) rotate(-1deg); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            animation: pulse 2s ease-in-out infinite;
+            box-shadow: 0 0 30px var(--glow);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 30px var(--glow); }
+            50% { transform: scale(1.05); box-shadow: 0 0 50px var(--glow); }
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo span {
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: block;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--success);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: statusPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes statusPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 30px;
+        }
+
+        .sidebar {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .mode-selector h3 {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+
+        .mode-btn {
+            width: 100%;
+            padding: 14px 16px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .mode-btn:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: var(--primary);
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+        }
+
+        .mode-btn i {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .chat-container {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 160px);
+            min-height: 600px;
+        }
+
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-title i {
+            font-size: 20px;
+            color: var(--primary);
+        }
+
+        .chat-title h2 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .clear-btn {
+            padding: 8px 16px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--error);
+            border-radius: 8px;
+            color: var(--error);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .clear-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .message.assistant .message-avatar {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .message.user .message-avatar {
+            background: linear-gradient(135deg, var(--accent), var(--success));
+        }
+
+        .message-content {
+            max-width: 80%;
+            padding: 16px 20px;
+            border-radius: 16px;
+            line-height: 1.6;
+        }
+
+        .message.assistant .message-content {
+            background: var(--bg-input);
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-content pre {
+            background: #0d1117;
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 12px 0;
+        }
+
+        .message-content code {
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+        }
+
+        .message-content p {
+            margin-bottom: 10px;
+        }
+
+        .message-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .input-container {
+            padding: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .input-box {
+            flex: 1;
+            position: relative;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 56px;
+            max-height: 200px;
+            padding: 16px 20px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 14px;
+            resize: none;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+        }
+
+        textarea::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .send-btn {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px var(--glow);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 16px 20px;
+            background: var(--bg-input);
+            border-radius: 16px;
+            width: fit-content;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: typing 1.4s ease-in-out infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        .welcome-message {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .welcome-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            margin: 0 auto 24px;
+            animation: float 3s ease-in-out infinite;
+            box-shadow: 0 0 60px var(--glow);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .welcome-message h2 {
+            font-size: 28px;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .welcome-message p {
+            color: var(--text-secondary);
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .feature-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .feature-card {
+            padding: 20px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-card i {
+            font-size: 24px;
+            margin-bottom: 12px;
+            color: var(--primary);
+        }
+
+        .feature-card h4 {
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .feature-card p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .language-selector {
+            display: none;
+            padding: 15px;
+            background: var(--bg-input);
+            border-radius: 12px;
+            margin-top: 15px;
+        }
+
+        .language-selector.visible {
+            display: block;
+        }
+
+        .language-selector h4 {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .lang-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .lang-btn {
+            padding: 10px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .lang-btn:hover, .lang-btn.active {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: var(--primary);
+        }
+
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: static;
+            }
+
+            .feature-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+    
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div>
+                    <h1>TradePackage AI</h1>
+                    <span>Intelligent Coding Assistant</span>
+                </div>
+            </div>
+            <div class="status-badge">
+                <div class="status-dot"></div>
+                Online & Ready
+            </div>
+        </header>
+
+        <div class="main-content">
+            <aside class="sidebar">
+                <div class="mode-selector">
+                    <h3>Choose Mode</h3>
+                    <button class="mode-btn active" data-mode="chat">
+                        <i class="fas fa-comments"></i>
+                        Chat Mode
+                    </button>
+                    <button class="mode-btn" data-mode="code">
+                        <i class="fas fa-code"></i>
+                        Generate Code
+                    </button>
+                    <button class="mode-btn" data-mode="analyze">
+                        <i class="fas fa-search-plus"></i>
+                        Analyze Code
+                    </button>
+                    <button class="mode-btn" data-mode="website">
+                        <i class="fas fa-globe"></i>
+                        Create Website
+                    </button>
+                    <button class="mode-btn" data-mode="research">
+                        <i class="fas fa-book-reader"></i>
+                        Deep Research
+                    </button>
+                </div>
+
+                <div class="language-selector" id="langSelector">
+                    <h4>Select Language</h4>
+                    <div class="lang-grid">
+                        <button class="lang-btn" data-lang="python">Python</button>
+                        <button class="lang-btn" data-lang="javascript">JavaScript</button>
+                        <button class="lang-btn" data-lang="react">React</button>
+                        <button class="lang-btn" data-lang="typescript">TypeScript</button>
+                        <button class="lang-btn" data-lang="php">PHP/Laravel</button>
+                        <button class="lang-btn" data-lang="dart">Flutter</button>
+                        <button class="lang-btn" data-lang="rust">Rust</button>
+                        <button class="lang-btn" data-lang="go">Go</button>
+                    </div>
+                </div>
+            </aside>
+
+            <main class="chat-container">
+                <div class="chat-header">
+                    <div class="chat-title">
+                        <i class="fas fa-comments"></i>
+                        <h2 id="chatTitle">Chat Mode</h2>
+                    </div>
+                    <button class="clear-btn" onclick="clearHistory()">
+                        <i class="fas fa-trash-alt"></i> Clear Chat
+                    </button>
+                </div>
+
+                <div class="messages" id="messages">
+                    <div class="welcome-message">
+                        <div class="welcome-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h2>Welcome to TradePackage AI</h2>
+                        <p>I'm your intelligent coding assistant. I can generate code, analyze your work, create websites, and help you research any topic.</p>
+                        
+                        <div class="feature-cards">
+                            <div class="feature-card" onclick="setMode('code')">
+                                <i class="fas fa-code"></i>
+                                <h4>Generate Code</h4>
+                                <p>Create code in any language</p>
+                            </div>
+                            <div class="feature-card" onclick="setMode('analyze')">
+                                <i class="fas fa-search-plus"></i>
+                                <h4>Analyze Code</h4>
+                                <p>Find bugs & improvements</p>
+                            </div>
+                            <div class="feature-card" onclick="setMode('website')">
+                                <i class="fas fa-globe"></i>
+                                <h4>Create Website</h4>
+                                <p>Build complete websites</p>
+                            </div>
+                            <div class="feature-card" onclick="setMode('research')">
+                                <i class="fas fa-book-reader"></i>
+                                <h4>Deep Research</h4>
+                                <p>Research any topic</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-container">
+                    <div class="input-wrapper">
+                        <div class="input-box">
+                            <textarea 
+                                id="userInput" 
+                                placeholder="Type your message..."
+                                rows="1"
+                                onkeydown="handleKeydown(event)"
+                            ></textarea>
+                        </div>
+                        <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-dart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+    <script>
+        let currentMode = 'chat';
+        let selectedLang = 'python';
+        let isLoading = false;
+        const userId = 'user_' + Math.random().toString(36).substr(2, 9);
+
+        const modeConfig = {
+            chat: { title: 'Chat Mode', icon: 'comments', placeholder: 'Ask me anything...' },
+            code: { title: 'Generate Code', icon: 'code', placeholder: 'Describe the code you need...' },
+            analyze: { title: 'Analyze Code', icon: 'search-plus', placeholder: 'Paste your code here for analysis...' },
+            website: { title: 'Create Website', icon: 'globe', placeholder: 'Describe the website you want to create...' },
+            research: { title: 'Deep Research', icon: 'book-reader', placeholder: 'What topic should I research?' }
+        };
+
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => setMode(btn.dataset.mode));
+        });
+
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedLang = btn.dataset.lang;
+            });
+        });
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.mode === mode);
+            });
+            
+            const config = modeConfig[mode];
+            document.getElementById('chatTitle').innerHTML = `<i class="fas fa-${config.icon}"></i> ${config.title}`;
+            document.getElementById('userInput').placeholder = config.placeholder;
+            
+            const langSelector = document.getElementById('langSelector');
+            langSelector.classList.toggle('visible', mode === 'code');
+        }
+
+        function handleKeydown(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function addMessage(content, isUser = false) {
+            const messages = document.getElementById('messages');
+            const welcome = messages.querySelector('.welcome-message');
+            if (welcome) welcome.remove();
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'assistant'}`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.innerHTML = isUser ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            
+            if (isUser) {
+                contentDiv.textContent = content;
+            } else {
+                contentDiv.innerHTML = marked.parse(content);
+                contentDiv.querySelectorAll('pre code').forEach(block => {
+                    Prism.highlightElement(block);
+                });
+            }
+            
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(contentDiv);
+            messages.appendChild(messageDiv);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function showTyping() {
+            const messages = document.getElementById('messages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message assistant';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = `
+                <div class="message-avatar"><i class="fas fa-robot"></i></div>
+                <div class="typing-indicator">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            `;
+            messages.appendChild(typingDiv);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function removeTyping() {
+            const typing = document.getElementById('typingIndicator');
+            if (typing) typing.remove();
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const text = input.value.trim();
+            if (!text || isLoading) return;
+
+            isLoading = true;
+            document.getElementById('sendBtn').disabled = true;
+            
+            addMessage(text, true);
+            input.value = '';
+            showTyping();
+
+            try {
+                let endpoint = 'chat';
+                let body = { text, user_id: userId };
+
+                if (currentMode === 'code') {
+                    endpoint = 'generate';
+                    body = { description: text, language: selectedLang };
+                } else if (currentMode === 'analyze') {
+                    endpoint = 'analyze';
+                    body = { code: text };
+                } else if (currentMode === 'website') {
+                    endpoint = 'website';
+                    body = { description: text };
+                } else if (currentMode === 'research') {
+                    endpoint = 'research';
+                    body = { topic: text };
+                }
+
+                const response = await fetch(`/api/${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+
+                const data = await response.json();
+                removeTyping();
+
+                const result = data.response || data.code || data.analysis || data.website || data.research || 'No response received.';
+                addMessage(result);
+            } catch (error) {
+                removeTyping();
+                addMessage('Error: Could not connect to the AI service. Please try again.');
+            }
+
+            isLoading = false;
+            document.getElementById('sendBtn').disabled = false;
+        }
+
+        async function clearHistory() {
+            try {
+                await fetch('/api/clear-history', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userId })
+                });
+                
+                const messages = document.getElementById('messages');
+                messages.innerHTML = `
+                    <div class="welcome-message">
+                        <div class="welcome-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h2>Chat Cleared</h2>
+                        <p>Your conversation history has been reset. Start a new conversation!</p>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Failed to clear history:', error);
+            }
+        }
+
+        const textarea = document.getElementById('userInput');
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,268 @@
+Instruction Set for Replit
+
+Project Name: MyLocalAI (or whatever you want)
+
+Purpose:
+A powerful AI coding assistant capable of:
+
+Analyzing code and finding errors
+
+Debugging and applying patches automatically
+
+Creating websites on demand
+
+Performing research and generating code for any request
+
+Interacting via a web API (FastAPI)
+
+1. Import
+
+Import the GitHub repository: https://github.com/YourUsername/YourRepo.git
+
+Language: Python
+
+Use Python 3.11 or latest compatible version
+
+2. Install Dependencies
+
+Automatically install from requirements.txt:
+
+fastapi
+uvicorn
+pydantic
+requests
+python-dotenv
+gitpython
+
+
+Exclude .venv/ from GitHub (already in .gitignore)
+
+3. Setup Backend Server
+
+The backend should be a FastAPI server listening on:
+
+host = 0.0.0.0
+port = 3000
+
+
+Endpoints to create:
+
+POST /chat – send a text prompt → AI returns code or answers
+
+Request body:
+
+{
+  "text": "string",
+  "context": "string",
+  "max_tokens": 512
+}
+
+
+POST /analyze_file – send a file path → AI analyzes and reports issues
+
+POST /apply_patch – send a patch string → AI applies changes to code
+
+POST /run_command – run system commands via AI
+
+Enable Swagger UI for testing: /docs
+
+4. Connect AI Model
+
+Use Ollama CLI or API to run the model qwen2.5-coder:14b
+
+Backend function example:
+
+import subprocess
+
+def run_ollama(prompt: str):
+    result = subprocess.run(
+        ["ollama", "run", "qwen2.5-coder:14b", prompt],
+        capture_output=True,
+        text=True
+    )
+    return result.stdout
+
+
+If using API, replace subprocess with API calls.
+
+5. Allow Full AI Functionality
+
+AI should be able to:
+
+Generate Python, HTML, CSS, JavaScript, or any language code
+
+Analyze files and find issues
+
+Suggest patches or automatically edit files
+
+Generate fully functional websites on request
+
+Perform research or gather information for coding tasks
+
+6. Configure Replit Run Command
+
+Set Replit’s run command to:
+
+python main.py
+
+
+main.py should include:
+
+import uvicorn
+
+if __name__ == "__main__":
+    uvicorn.run("app:app", host="0.0.0.0", port=3000, reload=True)
+
+
+This allows Replit to expose your API publicly.
+
+7. Testing
+
+Test endpoints at:
+
+https://your-repl-name.username.repl.co/docs
+
+
+Test AI functionality directly in /chat endpoint
+
+Test code analysis and patching endpoints
+
+✅ Result on Replit:
+
+Fully running AI backend
+
+Web-accessible endpoints for coding, debugging, research
+
+Can generate websites and apply patches automatically
+
+Ready for integration with frontend interface if desired
+
+If you want, I can write the exact Replit-ready Python backend that implements this fully, including /chat, /analyze_file, /apply_patch, and /run_command endpoints already connected to Ollama, so you can literally just import the repo into Replit and it will work.
+
+Do you want me to do that next?
+
+You said:
+from there how will i be using my ai inside my vscode?? or will the ai have its own frontend where i can import my github?? or can i use my ai inside my telegram bot if its possible with dashboards and everything give me a clear direction how the ai will be functioning
+ChatGPT said:
+
+Perfect, now we’re talking about how your AI will actually be used. Let’s break it down clearly so you know exactly how it will function, and how you can interact with it from VSCode, web frontend, or other platforms like Telegram.
+
+1. AI Backend (Core)
+
+Your FastAPI backend running on Replit (or local machine) is the core engine.
+It handles:
+
+Receiving prompts via API (/chat)
+
+Analyzing code (/analyze_file)
+
+Applying patches (/apply_patch)
+
+Running commands (/run_command)
+
+Calling Ollama’s model (qwen2.5-coder:14b) to generate responses
+
+Key idea: the AI itself doesn’t “live” in VSCode or a frontend. It’s a server that any client can talk to.
+
+2. Using AI in VSCode
+
+There are a few ways to integrate your AI into VSCode:
+
+Option A: Use REST API
+
+Your backend exposes endpoints on Replit (or localhost).
+
+In VSCode, you can write a small Python script or VSCode extension to send requests:
+
+import requests
+
+url = "https://your-repl-name.username.repl.co/chat"
+data = {"text": "Write a Python function to reverse a string", "context": "", "max_tokens": 512}
+response = requests.post(url, json=data)
+print(response.json())
+
+
+You can also create a VSCode Task or Keybinding to send the current file’s code to /analyze_file and get feedback.
+
+Option B: Dedicated VSCode Extension (optional)
+
+You can build or customize a small VSCode extension that calls your API and shows AI responses inside VSCode panels.
+
+This is optional but gives a native IDE feel.
+
+3. AI Frontend
+
+You can also build a web frontend (HTML + JS) that talks to your FastAPI backend:
+
+Type prompts, see code generated
+
+Upload files for analysis
+
+Apply patches interactively
+
+Replit already exposes /docs, which is a basic interactive frontend via Swagger.
+
+For a nicer dashboard, you can make a custom React/Vue frontend that calls /chat and /analyze_file.
+
+4. AI in Telegram Bot
+
+Yes, your AI can run inside a Telegram bot:
+
+Use Python-telegram-bot library to connect to your AI backend.
+
+Example:
+
+from telegram import Update
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+import requests
+
+API_URL = "https://your-repl-name.username.repl.co/chat"
+
+def handle_message(update: Update, context: CallbackContext):
+    prompt = update.message.text
+    response = requests.post(API_URL, json={"text": prompt, "context": "", "max_tokens": 512})
+    update.message.reply_text(response.json())
+
+updater = Updater("YOUR_TELEGRAM_BOT_TOKEN")
+updater.dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_message))
+updater.start_polling()
+updater.idle()
+
+
+The bot can then act as your mobile-accessible AI coding assistant.
+
+You can even extend it to accept files, generate websites, and send patches.
+
+5. Recommended Workflow
+
+Backend runs on Replit or your server (FastAPI + Ollama).
+
+VSCode usage:
+
+Send prompts or code snippets to /chat or /analyze_file.
+
+Receive suggestions, fixes, or generated code.
+
+Web dashboard (optional):
+
+Type prompts and interact visually.
+
+Upload files for analysis.
+
+Telegram bot (optional):
+
+Quick access from anywhere.
+
+Send code or prompts and get instant AI feedback.
+
+✅ Summary
+
+Backend: FastAPI + Ollama = core AI engine
+
+VSCode: communicates via API → can integrate into IDE workflow
+
+Web frontend: optional, visual dashboard for AI
+
+Telegram bot: optional, mobile/remote access
+
+Your AI is centralized (the backend) but fully accessible from multiple clients, giving you flexibility.

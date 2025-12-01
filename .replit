@@ -1,6 +1,40 @@
-modules = ["python-3.12", "nodejs-20"]
+modules = ["nodejs-20", "python-3.11"]
 [agent]
 expertMode = true
+integrations = ["python_openai:1.0.0"]
 
 [nix]
 channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
+TELEGRAM_BOT_TOKEN = "7957057793:AAEaOSB5kAsxqjGty9x0ldBL8Ind_xxSZ3k"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "TradePackage AI"
+
+[[workflows.workflow]]
+name = "TradePackage AI"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd backend && python app.py"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[ports]]
+localPort = 5000
+externalPort = 80
