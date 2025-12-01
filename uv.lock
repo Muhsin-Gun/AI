@@ -852,7 +852,6 @@ dependencies = [
     { name = "openai" },
     { name = "python-dotenv" },
     { name = "python-telegram-bot" },
-    { name = "telegram" },
     { name = "uvicorn" },
 ]
 
@@ -864,7 +863,6 @@ requires-dist = [
     { name = "openai", specifier = ">=2.8.1" },
     { name = "python-dotenv", specifier = ">=1.2.1" },
     { name = "python-telegram-bot", specifier = ">=22.5" },
-    { name = "telegram", specifier = ">=0.0.1" },
     { name = "uvicorn", specifier = ">=0.38.0" },
 ]
 
@@ -889,12 +887,6 @@ sdist = { url = "https://files.pythonhosted.org/packages/ba/b8/73a0e6a6e079a9d9c
 wheels = [
     { url = "https://files.pythonhosted.org/packages/d9/52/1064f510b141bd54025f9b55105e26d1fa970b9be67ad766380a3c9b74b0/starlette-0.50.0-py3-none-any.whl", hash = "sha256:9e5391843ec9b6e472eed1365a78c8098cfceb7a74bfd4d6b1c0c0095efb3bca", size = 74033, upload-time = "2025-11-01T15:25:25.461Z" },
 ]
-
-[[package]]
-name = "telegram"
-version = "0.0.1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/9d/ca/8bdf2deb93b9f6971dabf2ddc827c2a98ce23e13582a15b37e9bc169f226/telegram-0.0.1.tar.gz", hash = "sha256:d405a0af4c868a8dbeae6d03e297e21c7ee6269e11e2ed3810e15544aba02591", size = 879, upload-time = "2015-09-29T07:32:18.348Z" }
 
 [[package]]
 name = "tqdm"

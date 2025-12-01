@@ -10,6 +10,5 @@ dependencies = [
     "openai>=2.8.1",
     "python-dotenv>=1.2.1",
     "python-telegram-bot>=22.5",
-    "telegram>=0.0.1",
     "uvicorn>=0.38.0",
 ]
