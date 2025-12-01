@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pydantic
+requests
+python-dotenv
+gitpython
+# Optional: transformers & torch if you want to run transformer models locally (heavy)
+# transformers
+# torch

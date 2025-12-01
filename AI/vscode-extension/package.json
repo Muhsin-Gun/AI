@@ -1,0 +1,39 @@
+{
+  "name": "my-local-ai",
+  "displayName": "My Local AI",
+  "description": "Talk to your local AI server (MyLocalAI Enhanced)",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "activationEvents": [
+    "onCommand:myLocalAI.chat",
+    "onCommand:myLocalAI.analyzeFile",
+    "onCommand:myLocalAI.applyPatch",
+    "onCommand:myLocalAI.runCommand"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "myLocalAI.chat",
+        "title": "Talk To Local AI"
+      },
+      {
+        "command": "myLocalAI.analyzeFile",
+        "title": "Analyze Current File"
+      },
+      {
+        "command": "myLocalAI.applyPatch",
+        "title": "Apply Unified Patch"
+      },
+      {
+        "command": "myLocalAI.runCommand",
+        "title": "Run Shell Command"
+      }
+    ]
+  },
+  "dependencies": {
+    "axios": "^1.4.0"
+  }
+}
